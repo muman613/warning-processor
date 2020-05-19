@@ -185,10 +185,6 @@ void display_stats(userfile_vec & vec, ostream & os = cout) {
     os << "Total warnings found : " << total_warnings << endl;
 }
 
-bool sort_by_filename(userFile & a, userFile & b) {
-    return (a.filePath < b.filePath);
-}
-
 int main(int argc, char * argv[]) {
     inputParms      parms;
     userfile_vec    fileVec;
@@ -232,7 +228,9 @@ int main(int argc, char * argv[]) {
             }
             cout << "File processing complete..." << endl;
 
-            std::sort(fileVec.begin(), fileVec.end(), sort_by_filename);
+            std::sort(fileVec.begin(), fileVec.end(), [=](const userFile & a, const userFile & b) {
+                return (a.filePath < b.filePath);
+            });
 
             ofstream output_file(parms.outputFilename.c_str());
             display_stats(fileVec, output_file);
