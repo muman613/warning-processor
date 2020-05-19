@@ -1,13 +1,11 @@
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <readline/readline.h>
 #include <string>
 #include <vector>
 #include <unistd.h>
-#include <stdlib.h>
 #include <experimental/filesystem>
 #include <regex>
+#include "warnings.h"
 
 using namespace std;
 using namespace experimental;
@@ -21,36 +19,6 @@ struct inputParms {
     string outputFilename{};
     bool verbose{false};
 };
-
-class warning {
-public:
-    warning(string & _linespec, string & _type) : linespec(_linespec), type(_type) {};
-    warning(const warning & copy) : linespec(copy.linespec), type(copy.type) {};
-
-//protected:
-    string linespec;
-    string type;
-};
-
-using warning_map = map<string, std::vector<warning>>;
-
-class userFile {
-public:
-    userFile(string & _filepath) : filePath(_filepath) {};
-
-    void add_warning(const warning & warn) {
-        string warning_type;
-        get_warning_type(warn.type, warning_type);
-        warningmap[warning_type].push_back(warn);
-    }
-
-//protected:
-    string          filePath;
-    warning_map     warningmap;
-};
-
-using userfile_vec = vector<userFile>;
-
 
 /**
  * Parse arguments from commandline...
