@@ -43,6 +43,9 @@ bool parse_args(int argc, char * argv[], inputParms & parms) {
             case 'v':
                 parms.verbose = true;
                 break;
+            default:
+                cerr << "Invalid parameter " << opt << endl;
+                break;
         }
     }
 
@@ -85,9 +88,7 @@ bool load_contents(string filename, string_vec & contents) {
  * @return
  */
 bool extract_warnings(string_vec &input, string_vec &output) {
-    bool bRes = false;
-
-    for (auto line : input) {
+    for (const auto & line : input) {
         if (line.find(": warning: ") != std::string::npos) {
             output.push_back(line);
         }
@@ -153,16 +154,9 @@ void display_stats(userfile_vec & vec, ostream & os = cout) {
     os << "Total warnings found : " << total_warnings << endl;
 }
 
-int main(int argc, char * argv[]) {
-    inputParms      parms;
+int generate_warning_report(inputParms & parms) {
     userfile_vec    fileVec;
-
-    parms.outputFilename = "report.txt"; // set default output filename
-
-    if (!parse_args(argc, argv, parms)) {
-        cerr << "Invalid arguments..." << endl;
-        return 10;
-    }
+    int             nResult{0};
 
     std::cout << "Parsing input file : " << parms.inputFilename << std::endl;
 
@@ -173,11 +167,11 @@ int main(int argc, char * argv[]) {
 
         if (load_contents(parms.inputFilename, inputFileContents)) {
             string_vec warningLines;
-            regex matchline("([a-zA-Z\\/0-9-_\\.]+):(\\d+:\\d+): warning: (.*)");
+            regex matchline(R"(([a-zA-Z\/0-9-_\.]+):(\d+:\d+): warning: (.*))");
 
             cout << "Extracting warnings from input file..." << endl;
             if (extract_warnings(inputFileContents, warningLines)) {
-                for (auto line : warningLines) {
+                for (auto const & line : warningLines) {
                     smatch matches;
 
                     if (regex_search(line, matches, matchline)) {
@@ -206,9 +200,33 @@ int main(int argc, char * argv[]) {
         }
     } else {
         cerr << "Unable to open input file \"" << parms.inputFilename << "\"." << endl;
+        nResult = 10;
     }
 
-    return 0;
+    return nResult;
+}
+
+int main(int argc, char * argv[]) {
+    inputParms      parms;
+
+    parms.outputFilename = "report.txt"; // set default output filename
+
+    if (!parse_args(argc, argv, parms)) {
+        cerr << "Invalid arguments..." << endl;
+        return 10;
+    }
+
+    int nResult{0};
+    if ((nResult = generate_warning_report(parms)) != 0) {
+        switch (nResult) {
+            case 10:
+                cout << "Terminating due to nonexistent input file." << endl;
+                break;
+            default:
+                break;
+        }
+    }
+    return nResult;
 }
 //([a-zA-Z\/0-9-_\.]+):(\d+:\d+): warning: (.*)
 //\[-W([\w-]+)]
