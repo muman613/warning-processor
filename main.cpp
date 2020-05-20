@@ -12,7 +12,7 @@ using namespace experimental;
 
 using string_vec = std::vector<std::string>;
 
-bool get_warning_type(const string & desc, string & type);
+
 
 struct inputParms {
     string inputFilename{};
@@ -63,7 +63,7 @@ bool parse_args(int argc, char * argv[], inputParms & parms) {
  * @param contents
  * @return
  */
-bool load_contents(string filename, string_vec & contents) {
+bool load_contents(const string& filename, string_vec & contents) {
     ifstream ifp(filename.c_str());
 
     if (!ifp) {
@@ -113,9 +113,6 @@ bool get_warning_type(const string & desc, string & type) {
 }
 
 bool add_warning_to_file(userfile_vec & vec, string & filename, string & linespec, string & desc) {
-    string warning_type;
-
-    get_warning_type(desc, warning_type);
 
     for (auto & fileObj : vec) {
         if (fileObj.filePath == filename) {
@@ -143,10 +140,10 @@ void display_stats(userfile_vec & vec, ostream & os = cout) {
         os << "Filename      : " << thisFile.filePath << endl;
         os << "Warning Types : " << thisFile.warningmap.size() << endl;
 
-        for (auto warn_iter = thisFile.warningmap.begin() ; warn_iter != thisFile.warningmap.end() ; warn_iter++) {
-            os << "\tType : " << warn_iter->first << "\t" << warn_iter->second.size() << endl;
-            total_warnings += warn_iter->second.size();
-            for (auto this_warning : warn_iter->second) {
+        for (const auto & warn_iter : thisFile.warningmap) {
+            os << "\tType : " << warn_iter.first << "\t" << warn_iter.second.size() << endl;
+            total_warnings += warn_iter.second.size();
+            for (const auto& this_warning : warn_iter.second) {
                 os << "\t\t @ " << this_warning.linespec << " : " << this_warning.type << endl;
             }
         }
