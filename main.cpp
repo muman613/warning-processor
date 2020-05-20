@@ -144,7 +144,7 @@ void display_stats(userfile_vec & vec, ostream & os = cout) {
             os << "\tType : " << warn_iter.first << "\t" << warn_iter.second.size() << endl;
             total_warnings += warn_iter.second.size();
             for (const auto& this_warning : warn_iter.second) {
-                os << "\t\t @ " << this_warning.linespec << " : " << this_warning.type << endl;
+                os << "\t\t @ " << this_warning.getspec() << " : " << this_warning.gettype() << endl;
             }
         }
     }

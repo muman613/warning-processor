@@ -11,30 +11,29 @@
 
 class warning {
 public:
-    warning(std::string & _linespec, std::string & _type) : linespec(_linespec), type(_type) {};
-    warning(const warning & copy) = default;
+    warning(std::string & _linespec, std::string & _type);
+    warning(const warning & copy);
 
-//protected:
+    [[nodiscard]] std::string gettype() const;
+    [[nodiscard]] std::string getspec() const;
+
+    friend std::ostream & operator <<(std::ostream & out, const warning & w);
+
+protected:
     std::string linespec;
     std::string type;
 };
 
 using warning_map = std::map<std::string, std::vector<warning>>;
 
-extern bool get_warning_type(const std::string & desc, std::string & type);
-
 class userFile {
 public:
-    userFile(std::string & _filepath) : filePath(_filepath), warningmap{} {};
+    explicit userFile(std::string & _filepath);
 
-    void add_warning(const warning & warn) {
-        std::string warning_type;
-        get_warning_type(warn.type, warning_type);
-        warningmap[warning_type].push_back(warn);
-    }
+    void add_warning(const warning & warn);
 
 //protected:
-    std::string          filePath;
+    std::string     filePath;
     warning_map     warningmap;
 };
 
