@@ -154,6 +154,12 @@ void display_stats(userfile_vec & vec, ostream & os = cout) {
     os << "Total warnings found : " << total_warnings << endl;
 }
 
+/**
+ * Generate warning report using parameters passed in through inputParms.
+ *
+ * @param parms - reference to inputParms structure.
+ * @return integer result code.
+ */
 int generate_warning_report(inputParms & parms) {
     userfile_vec    fileVec;
     int             nResult{0};
