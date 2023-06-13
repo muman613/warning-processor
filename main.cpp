@@ -3,12 +3,13 @@
 #include <string>
 #include <vector>
 #include <unistd.h>
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
+#include <filesystem>
 #include <regex>
 #include "warnings.h"
 
 using namespace std;
-using namespace experimental;
+using namespace std::filesystem;
 
 using string_vec = std::vector<std::string>;
 
@@ -100,7 +101,8 @@ bool extract_warnings(string_vec &input, string_vec &output) {
 }
 
 bool get_warning_type(const string & desc, string & type) {
-    regex matchtype("\\[-W([\\w-]+)]");
+    // regex matchtype("\\[-W([\\w-]+)]");
+    regex matchtype(R"(\[-W(.*)\])");
     smatch matches;
 
     if (regex_search(desc, matches, matchtype)) {
